@@ -4,10 +4,10 @@ import eplAst
 import ply.yacc as yacc
 import ply.lex as lex
 
-reserved = {
+reserved = { # reserved keywords
     'print' : 'PRINT',
-    'cpt' : 'CPT',
-    'flip' : 'FLIP',
+    'cpt' : 'CPT', # create a channel
+    'flip' : 'FLIP', # flip function
     'randomState' : 'RANDOM_STATE',
     'uniformState' : 'UNIFORM_STATE',
     'copy' : 'COPY',
@@ -21,22 +21,24 @@ reserved = {
 #   'else' : 'ELSE'
 }
 
-tokens = [
+tokens = [ # any input get split into tokens
    'EQUALS',
-   'NAME', 'STRING', 'PROBABILITY_VALUE','BIT',
+   'NAME', 'STRING', 'PROBABILITY_VALUE','BIT', # bit is 0 or 1
  #  'NUMBER','INTEGER',
    'VALIDITY', 'CONDITIONING', # use PIPE instead
-   'LPAREN', 'RPAREN',
-   'L_S_PAREN','R_S_PAREN',
-   'L_B_PAREN','R_B_PAREN',
-   'L_A_PAREN','R_A_PAREN',
+   'LPAREN', 'RPAREN', # brackets ( )
+   'L_S_PAREN','R_S_PAREN', # square brackets []
+   'L_B_PAREN','R_B_PAREN', # brace brackets {}
+   'L_A_PAREN','R_A_PAREN', # brackes << >>
    'SEMICOL', 'COLON', 'COMMA',
-   'PLUS', 'STAR', 'PIPE', 'KET',
-   'CROSS','AND','NEGATE','MARGINAL'
+   'PLUS', 'STAR', 'PIPE', 'KET',  # ket = >
+   'CROSS','AND','NEGATE','MARGINAL' # cross = @, negate = ~, marginal = %
 ] +  list(reserved.values())
 
 # Tokens
 t_EQUALS = r'\='
+# convention of ply: you need to use the notation t_[token name] = value.
+# every token needs to be recognised through regular expression. r'\+' means take + literally.
 t_SEMICOL = r'\;'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
@@ -56,13 +58,21 @@ t_NEGATE = r'\~'
 t_MARGINAL = r'\%'
 t_CONDITIONING = r'\/' # use PIPE instead
 
+# for more complex lexical recognition, you make a function
 def t_NAME(t):
+    # t is a token object, defined in ply. It has two properties: type and value.
     r'[a-zA-Z_][a-zA-Z_0-9]*'
+    # in Python, the first line(s) in a function definition can be (optional) a comment, of type string.
+    #ply interprets these comments as instructions.
+    #In this case (lexical analysis), ply reads the comment as the regular expression for that token.
+    # if the input token t matches the reg exp, goes on with the function execution.
     t.type = reserved.get(t.value,'NAME')    # Check for reserved words
+    # If the token is a reserved word, it changes its type.
+    # The above use of the method get on a dict reads as: if reserved.has_key(t.value): t.type = t.value else t.type = 'NAME'
     return t
 
 def t_STRING(t):
-    r'\"[^\"]+\"'
+    r'\"[^\"]+\"' # ^\" means any character but "
     t.type = 'STRING'    # Check for reserved words
     return t
 
@@ -83,10 +93,10 @@ def t_R_A_PAREN(t):
 
 def t_comment(t):
     r"[ ]*\043[^\n]*"  # \043 is '#'
-    pass
+    pass # ignore comments, just advance in the lexical analysis (nb: with return you would stop the lexical analysis)
 
 def t_NUMBER(t):
-    r'((\d+)?\.(\d+))|\d+'
+    r'((\d+)?\.(\d+))|\d+' # I can write .5 for 0.5
     if re.match(r'^\d+$',t.value):
         t.type = 'INTEGER'
         t.value = int(t.value)
@@ -96,9 +106,10 @@ def t_NUMBER(t):
         t.value = float(t.value)
         if t.value <= 1.0:
             t.type = 'PROBABILITY_VALUE'
+    # note that token gets typed only if the value is (a) it is integer (in which case can be INTEGER or BIT) or (b) it is <=1 (in which case it is PROBABILITY_VALUE)
     return t
 
-t_ignore = u" \t"
+t_ignore = r" \t" # ignore tabs. 
 
 def t_newline(t):
     r'\n+'
@@ -354,14 +365,22 @@ class eplParser(object):
     def __init__(self, single=False):
         self.single = single
         self.lexer = lex.lex()
+        # lexer: from sequence of characters to tokens
+        # lex() goes through the current program and looks for the t_SOMETHING definitions, and apply them.
+        # the outcome of the lexical analysis (starting from a sequence of characters) is a sequence of tokens,
+        # each with a type and a value. Now the syntactic analysis can start. It is more complex than the
+        # lexical analysis (regular expression vs context free grammar)
         self.parser = yacc.yacc(start="program")
-
+        # parser: checks if the sequence of tokens match the given syntactic rules
+        # program is the name of the non-terminal symbol from which the syntactic analysis starts
+        # yacc.yacc() generates the actual parser, which goes through the previous part of the program and looks for functions p_SOMETHING.
+        # and builds the sequence of EfProb commands.
     def parse(self, code):
-        self.lexer.input(code)
+        self.lexer.input(code) # let code be the input of the lexer
         parsedListStatements = self.parser.parse(lexer=self.lexer)
         if self.single:
             syntaxTree = ast.Interactive(body=parsedListStatements)
         else:
             syntaxTree = ast.Module(body=parsedListStatements)
-        ast.fix_missing_locations(syntaxTree)
+        ast.fix_missing_locations(syntaxTree) # Adds line numbers to the generated program. If the program gets stuck, this tells where the error was.
         return syntaxTree
