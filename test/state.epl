@@ -1,0 +1,16 @@
+# state definition
+fdice = [0.167|_1> + 0.167|_2> + 0.167|_3> + 0.167|_4> + 0.167|_5> + 0.167|_6>];
+print(fdice);
+
+fdice = uniformState(_1,_2,_3,_4,_5,_6);
+print(fdice);
+
+print(randomState(_1,_2));
+
+print(flip(0.3));
+
+x = flip(0.2) @ uniformState(_1,_2,_3,_4);
+print(x);
+
+p = x % [0,1]; # marginal
+print(p)

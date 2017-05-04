@@ -1,0 +1,26 @@
+# disease_domain = [’D’, ’~D’]
+# prior_disease_state = State([1/100, 99/100], disease_domain)
+prior_disease_state = [0.01|"D" + 0.99|"~D"];
+
+# disease_pred = Predicate([1,0], disease_domain)
+disease_pred = {"D":1.0 , "~D":0.0};
+print(disease_pred);
+
+# prior_disease_state >= disease_pred
+print(prior_disease_state |= disease_pred);
+#0.01
+
+# test_domain = [’T’, ’~T’]
+# test_pred = Predicate([1,0], test_domain)
+test_pred = {"T":1.0 , "~T":0.0};
+print(test_pred);
+
+# sensitivity = Channel([[9/10, 1/20],[1/10, 19/20]], disease_domain, test_domain)
+sensitivity = <<[[0.9, 0.05],[0.1, 0.95]], ["D","~D"], ["T","~T"]>>;
+print(sensitivity);
+print(sensitivity >> prior_disease_state);
+print(sensitivity >> prior_disease_state |= test_pred);
+print(prior_disease_state |= sensitivity << test_pred);
+
+posterior_disease_state = prior_disease_state / (sensitivity << test_pred);
+print(posterior_disease_state)

@@ -1,0 +1,22 @@
+# predicate definition
+even = { _1:0.0, _2:1.0, _3:0.0, _4:1.0, _5:0.0, _6:1.0};
+print(even);
+
+# Orthocomplement
+odd = ~ even;
+print(odd);
+
+# Parallel conjunction
+p = {a:0.2, b:0.8, c:0.5, d:0.0};
+q = truth(T,F);
+print(p @ q);
+
+# Sequential conjunction
+p1 = {x:0.3, y:0.8, z:0.01};
+p2 = {x:0.5, y:0.2, z:0.25};
+print(p1 & p2);
+
+# Disjunction
+print(p1 | p2);
+
+print(0.5 * p1)

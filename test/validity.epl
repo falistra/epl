@@ -1,0 +1,25 @@
+# state definition
+#fdice = [0.167|_1> + 0.167|_2> + 0.167|_3> + 0.167|_4> + 0.167|_5> + 0.167|_6>];
+fdice = uniformState(_1,_2,_3,_4,_5,_6);
+
+# predicate definition
+even = { _1:0.0, _2:1.0, _3:0.0, _4:1.0, _5:0.0, _6:1.0};
+
+# alias definition
+odd = ~ even;
+
+# print function
+print(odd);
+
+# validity : type probability-value
+print(fdice |= odd);
+
+print(fdice |= (odd + even));
+
+print(fdice |= (odd & even));
+
+print(fdice |= (odd | even));
+
+print(fdice |= (0.5 * even + 0.2 * odd) + even);
+
+print(fdice |= (0.5 * even + 0.2 * odd) | even)

@@ -1,0 +1,15 @@
+ Il volume nell'unità C è Windows7_OS
+ Numero di serie del volume: E6DE-4DF9
+
+ Directory di C:\Users\Fausto\FABIO\EfProb\epl\test
+
+02/05/2017  14:11               542 bayesianNet.epl
+01/05/2017  20:02               946 channel.epl
+30/04/2017  17:13               285 conditioning.epl
+01/05/2017  14:38               615 example.epl
+30/04/2017  16:20               397 predicate.epl
+30/04/2017  15:53               323 state.epl
+01/05/2017  11:49               120 test.epl
+30/04/2017  16:29               563 validity.epl
+               8 File          3.791 byte
+               0 Directory  213.543.620.608 byte disponibili

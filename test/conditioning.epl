@@ -1,0 +1,11 @@
+fdice = uniformState(_1,_2,_3,_4,_5,_6);
+even = { _1:0.0, _2:1.0, _3:0.0, _4:1.0, _5:0.0, _6:1.0};
+atmost4 = { _1:1.0, _2:1.0, _3:1.0, _4:1.0, _5:0.0, _6:0.0};
+
+print(fdice |= even);
+
+print(fdice |= atmost4);
+
+print(fdice / atmost4 |= even);
+
+print(fdice / even |= atmost4)

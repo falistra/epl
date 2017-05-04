@@ -1,0 +1,23 @@
+prior = flip(0.01) @ flip(0.005) @ flip(0.2) @ flip(0.1) @ flip(0.1);
+
+up = {True:1.0 , False:0.0};
+W = truth(True , False);
+
+LC = up @ W @ W @ W @ W;
+TB = W @ up @ W @ W @ W;
+CO = W @ W @ up @ W @ W;
+SF = W @ W @ W @ up @ W;
+OT = W @ W @ W @ W @ up;
+
+print(prior |= LC);
+
+cough = 0.5 * CO | 0.3 * LC | 0.7 * TB | 0.01 * OT;
+fever = 0.3 * CO | 0.5 * SF | 0.2 * TB | 0.01 * TB;
+chest_pain = 0.4 * LC | 0.5 * TB | 0.01 * OT;
+short_breath = 0.4 * LC | 0.5 * TB | 0.01 * OT;
+
+post = prior / (cough & fever & chest_pain & short_breath);
+
+print( post % [1, 1, 0, 0, 0] );
+
+print( post |= LC & TB )
