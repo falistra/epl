@@ -109,7 +109,7 @@ def t_NUMBER(t):
     # note that token gets typed only if the value is (a) it is integer (in which case can be INTEGER or BIT) or (b) it is <=1 (in which case it is PROBABILITY_VALUE)
     return t
 
-t_ignore = r" \t" # ignore tabs. 
+t_ignore = r" \t" # ignore tabs.
 
 def t_newline(t):
     r'\n+'
@@ -119,7 +119,7 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
-# Parsing rules
+# Parsing rules (definining the grammar as a BNF)
 
 precedence = (
     ('left', 'L_A_PAREN'),
@@ -135,13 +135,24 @@ precedence = (
 )
 
 def p_program_singleC(p):
+    # p stands for production rule (array of syntactic elements, like program, channel, SEMICOL, ...)
    'program : stm '
+    # each def defines a function p_[NAME OF NON-TERMINAL SYMBOL]_[SOMETHING THAT IDENTIFIES THE CURRENT RULE]
+    # As before, the first line (a Python comment) tells the matching rule, here expressed in BNF.
+    # For instance, this rule says: a program is a single statement.
    p[0] = [p[1]]
+    # p[0] =the property value of the syntactic element on the LHS of the rule (program, in this case)
+    # p[1], p[2], ... = the property values of the syntactic elements on the RHS of the rule, in sequence
+    # this says: the value of program is the array whose only element is the value of channel.
 
+# This rule is an OR wrt the previous rule
 def p_program_seqC(p):
    'program : stm SEMICOL program'
+    # We use the convention of writing terminal symbols of the grammar in capital letters,
+    # corresponding to the tokens of the lexical analysis.
    p[0] = p[3]
    p[0].insert(0,p[1])
+    # Here I expand the array with more 'program' elements (in front). The meaning of the program will be a sequence of statements.
 
 def p_stm_print(p):
     '''stm : PRINT LPAREN exp RPAREN '''
@@ -284,7 +295,12 @@ def p_predicate_exp(p):
                     | exp PLUS exp
                     | exp PIPE exp
                     | PROBABILITY_VALUE STAR exp
-    '''
+    ''' # why not predicate CROSS predicate? This is too restrictive. If we want to say 'anything that will
+    # generate a predicate' this can mean many different things, so exp CROSS exp it's the sensible thing to do.
+    # This is going to be too lose. At the syntactic level there is not going to be nothing
+    # telling me what type the expressions are: things are made even more ambiguous because of operator overloading
+    # (the same sign being used for operations on predicates and on states.) It will be the efProb execution to check
+    # the types and give an error for uncorrect program.
     p[0] = eplAst.predicateExp(p)
 
 def p_predicate_negate(p):
@@ -377,7 +393,7 @@ class eplParser(object):
         # and builds the sequence of EfProb commands.
     def parse(self, code):
         self.lexer.input(code) # let code be the input of the lexer
-        parsedListStatements = self.parser.parse(lexer=self.lexer)
+        parsedListStatements = self.parser.parse(lexer=self.lexer) # this list is p[0], constructed with the production rules
         if self.single:
             syntaxTree = ast.Interactive(body=parsedListStatements)
         else:
