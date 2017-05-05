@@ -5,6 +5,8 @@ import ast
 import argparse
 import sys
 
+# This program does the same as test_ast but not on command line, it writes the AST on a file.
+
 if __name__ == "__main__":
     optionParser = argparse.ArgumentParser(description='Effectus Probability Language interpreter.')
     optionParser.add_argument('efpProgram', metavar='prg', nargs='?',

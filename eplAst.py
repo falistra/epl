@@ -4,7 +4,7 @@ def name(p):
     return Str(s=p[1])
 
 def string(p):
-    return Str(s=p[1][1:-1])
+    return Str(s=p[1][1:-1]) # cut the quotes
 
 def bool(p):
     if p[1] == "True":
@@ -28,13 +28,13 @@ def print_(p):
     return Expr(value=Call(func=Name(id='print', ctx=Load()), args=[p[3]], keywords=[]))
 
 def exp(p):
-    return Expr(value=p[1])
+    return Expr(value=p[1]) # used e.g. when taking parentheses out
 
 def assign(p):
     return Assign(targets=[p[1]], value=p[3])
 
 def conditioning(p):
-    return BinOp(left=p[1], op=Div(), right=p[3])
+    return BinOp(left=p[1], op=Div(), right=p[3]) # BinOp = binary operation. Div() = division symbol
 
 def validity(p):
     return Compare(left=p[1], ops=[GtE()], comparators=[p[3]])
@@ -55,7 +55,7 @@ def state(p):
     return Call(func=Attribute(value=Name(id='efp', ctx=Load()), attr='State', ctx=Load()), args=[List(elts=values, ctx=Load()), List(elts=items, ctx=Load())], keywords=[])
 
 def stateElem(p):
-    return (p[3],Num(n=p[1]))
+    return (p[3],Num(n=p[1])) # the single value|key> pair in a state.
 
 def predicate(p):
     items = [i for (i,_) in p[2]]
@@ -132,7 +132,7 @@ builtin_function_dispatch = {
     'idn' : idn,
     'copy' : copy,
     'swap' : swap
-}
+} # the dispatch associates functions to names of the syntax, used in the definition.
 
 def c_builtin_function(p):
     f = builtin_function_dispatch.get(p[1])

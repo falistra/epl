@@ -186,6 +186,7 @@ def p_exp_state(p):
            '''
    p[0] = p[1]
 
+# distinction between loading (varLoad) and storing (varStore) a variable only important for compilation: at this stage they are just two names:
 def p_varLoad(p):
     """ varLoad : NAME """
     p[0] = eplAst.varLoad(p)
@@ -295,7 +296,8 @@ def p_predicate_exp(p):
                     | exp PLUS exp
                     | exp PIPE exp
                     | PROBABILITY_VALUE STAR exp
-    ''' # why not predicate CROSS predicate? This is too restrictive. If we want to say 'anything that will
+    ''' # why not something like predicate CROSS predicate? That would be is too restrictive (also because variables are not typed).
+    # If we want to say 'anything that will
     # generate a predicate' this can mean many different things, so exp CROSS exp it's the sensible thing to do.
     # This is going to be too lose. At the syntactic level there is not going to be nothing
     # telling me what type the expressions are: things are made even more ambiguous because of operator overloading
