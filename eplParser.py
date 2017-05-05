@@ -109,7 +109,7 @@ def t_NUMBER(t):
     # note that token gets typed only if the value is (a) it is integer (in which case can be INTEGER or BIT) or (b) it is <=1 (in which case it is PROBABILITY_VALUE)
     return t
 
-t_ignore = r" \t" # ignore tabs.
+t_ignore = u" \t" # ignore tabs.
 
 def t_newline(t):
     r'\n+'
