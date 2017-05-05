@@ -1,5 +1,5 @@
 import efprob_dc as efp
-import program as libKenta
+import libKenta
 import ast
 
 # This program prints the AST for an Efprob instruction. Helpful in designing the compiler eplAst.py.

@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+oldStuff/
+parsetab.py
+parser.out
+
 # C extensions
 *.so
 

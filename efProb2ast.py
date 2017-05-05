@@ -1,5 +1,5 @@
 import efprob_dc as efp
-import program as libKenta
+import libKenta
 import ast
 
 import argparse
