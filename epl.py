@@ -62,4 +62,11 @@ if __name__ == "__main__":
                 break
             if not sourceCode:
                 continue
-            my_eplInterpreter.run(sourceCode)
+            try:
+                my_eplInterpreter.run(sourceCode)
+            except Exception as error:
+                errorMsg = str(error)
+                if errorMsg.startswith("Syntax error"):
+                    print(errorMsg)
+                else:
+                    print(error)

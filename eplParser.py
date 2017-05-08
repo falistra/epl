@@ -3,6 +3,8 @@ import re
 import eplAst
 import ply.yacc as yacc
 import ply.lex as lex
+import efprob_dc as efp # only for python escape
+
 
 reserved = { # reserved keywords
     'print' : 'PRINT',
@@ -22,7 +24,7 @@ reserved = { # reserved keywords
 }
 
 tokens = [ # any input get split into tokens
-   'EQUALS',
+   'EQUALS', # 'PYTHON_ESCAPE',
    'NAME', 'STRING', 'PROBABILITY_VALUE','BIT', # bit is 0 or 1
  #  'NUMBER','INTEGER',
    'VALIDITY', 'CONDITIONING', # use PIPE instead
@@ -57,6 +59,17 @@ t_AND = r'\&'
 t_NEGATE = r'\~'
 t_MARGINAL = r'\%'
 t_CONDITIONING = r'\/' # use PIPE instead
+
+def t_python_escape(t):
+    r'\$[^\$]+\$'
+    try:
+        parsed = ast.parse(t.value[1:-1])
+        print(ast.dump(parsed))
+        compiled = compile(parsed,filename="<ast>", mode="exec")
+        exec(compiled)
+    except Exception as err:
+        print(err)
+    pass # ignore python code, just advance in the lexical analysis (nb: with return you would stop the lexical analysis)
 
 # for more complex lexical recognition, you make a function
 def t_NAME(t):
@@ -136,22 +149,23 @@ precedence = (
 
 def p_program_singleC(p):
     # p stands for production rule (array of syntactic elements, like program, channel, SEMICOL, ...)
-   'program : stm '
+    'program : stm '
     # each def defines a function p_[NAME OF NON-TERMINAL SYMBOL]_[SOMETHING THAT IDENTIFIES THE CURRENT RULE]
     # As before, the first line (a Python comment) tells the matching rule, here expressed in BNF.
     # For instance, this rule says: a program is a single statement.
-   p[0] = [p[1]]
+    p[0] = [p[1]]
     # p[0] =the property value of the syntactic element on the LHS of the rule (program, in this case)
     # p[1], p[2], ... = the property values of the syntactic elements on the RHS of the rule, in sequence
     # this says: the value of program is the array whose only element is the value of channel.
 
 # This rule is an OR wrt the previous rule
 def p_program_seqC(p):
-   'program : stm SEMICOL program'
+    'program : stm SEMICOL program'
     # We use the convention of writing terminal symbols of the grammar in capital letters,
     # corresponding to the tokens of the lexical analysis.
-   p[0] = p[3]
-   p[0].insert(0,p[1])
+
+    p[0] = p[3]
+    p[0].insert(0,p[1])
     # Here I expand the array with more 'program' elements (in front). The meaning of the program will be a sequence of statements.
 
 def p_stm_print(p):
