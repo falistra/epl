@@ -60,16 +60,23 @@ t_NEGATE = r'\~'
 t_MARGINAL = r'\%'
 t_CONDITIONING = r'\/' # use PIPE instead
 
-def t_python_escape(t):
-    r'\$[^\$]+\$'
-    try:
-        parsed = ast.parse(t.value[1:-1])
-        print(ast.dump(parsed))
-        compiled = compile(parsed,filename="<ast>", mode="exec")
-        exec(compiled)
-    except Exception as err:
-        print(err)
-    pass # ignore python code, just advance in the lexical analysis (nb: with return you would stop the lexical analysis)
+def t_ignore_python_escape(t):
+    r'\$\$\$\n'
+    print(t.lexer.lexdata[t.lexer.lexpos:t.lexer.lexpos+2])
+    t.lexer.lexpos += 2 # senza newLine
+    pass
+
+#def t_ignore_python_escape(t):
+#    r'\$[^\$]+\$'
+#    # r'\$[^\$]+\$'
+#    try:
+#        parsed = ast.parse(t.value[1:-1])
+#        print(ast.dump(parsed))
+#        compiled = compile(parsed,filename="<ast>", mode="exec")
+#        exec(compiled)
+#    except Exception as err:
+#        print(err)
+#    pass # ignore python code, just advance in the lexical analysis (nb: with return you would stop the lexical analysis)
 
 # for more complex lexical recognition, you make a function
 def t_NAME(t):
@@ -387,10 +394,11 @@ def p_empty(p):
     '''empty : '''
 
 def p_error(p):
-   if p:
+    if p:
       print("Syntax error at '%s'" % p.value)
-   else:
+    else:
       print("Syntax error at EOF")
+    raise TypeError("unknown/unexpected text at %r" % (p.value,))
 
 # ====== Syntax Parsing ==================
 class eplParser(object):

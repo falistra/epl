@@ -65,8 +65,4 @@ if __name__ == "__main__":
             try:
                 my_eplInterpreter.run(sourceCode)
             except Exception as error:
-                errorMsg = str(error)
-                if errorMsg.startswith("Syntax error"):
-                    print(errorMsg)
-                else:
-                    print(error)
+                print(error)
