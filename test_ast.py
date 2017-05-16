@@ -12,9 +12,9 @@ while 1:
         continue
     # s = input string (e.g. "print('Hello!')" )
 
-    parsed = ast.parse(s)
-    print(ast.dump(parsed))
+    #parsed = ast.parse(s)
+    #print(ast.dump(parsed))
 
-    compiled = compile(parsed,filename="<ast>", mode="exec")
+    compiled = compile(s,filename="<ast>", mode="exec")
 
     exec(compiled)

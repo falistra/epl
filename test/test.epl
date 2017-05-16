@@ -1,7 +1,7 @@
 x = [1.0|"D" + 0.0|"~D"];
 # escape python
-# $y = efp.State([1.0,0.0],["D",~D"])$
 $$$
-OK
-#y = efp.State([1.0,0.0],["D",~D"])
-print(x)
+print(x) # variavle defined in epl
+y = efp.State([0.5,0.5],["D","~D"])
+$$$;
+print(y) # variable defined inside python code

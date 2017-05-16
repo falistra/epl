@@ -1,5 +1,10 @@
 from ast import *
 
+def pythonEscape(p):
+    pythonModuleCode = parse(p[1])
+#    print(dump(pythonModuleCode))
+    return pythonModuleCode.body
+
 def name(p):
     return Str(s=p[1])
 
