@@ -1,0 +1,1 @@
+Module(body=[Assign(targets=[Name(id='x', ctx=Store())], value=Call(func=Attribute(value=Name(id='efp', ctx=Load()), attr='State', ctx=Load()), args=[List(elts=[Num(n=1.0), Num(n=0.0)], ctx=Load()), List(elts=[Str(s='D'), Str(s='~D')], ctx=Load())], keywords=[])), Pass(), Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[]))])

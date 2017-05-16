@@ -24,7 +24,7 @@ reserved = { # reserved keywords
 }
 
 tokens = [ # any input get split into tokens
-   'EQUALS', # 'PYTHON_ESCAPE',
+   'EQUALS', 'PYTHON_ESCAPE',
    'NAME', 'STRING', 'PROBABILITY_VALUE','BIT', # bit is 0 or 1
  #  'NUMBER','INTEGER',
    'VALIDITY', 'CONDITIONING', # use PIPE instead
@@ -60,11 +60,21 @@ t_NEGATE = r'\~'
 t_MARGINAL = r'\%'
 t_CONDITIONING = r'\/' # use PIPE instead
 
-def t_ignore_python_escape(t):
+def t_PYTHON_ESCAPE(t):
     r'\$\$\$\n'
-    print(t.lexer.lexdata[t.lexer.lexpos:t.lexer.lexpos+2])
-    t.lexer.lexpos += 2 # senza newLine
-    pass
+    start = stop = t.lexer.lexpos
+    while (t.lexer.lexdata[stop:stop+3] != '$$$'):
+        stop += 1
+    pythonCode = t.lexer.lexdata[start:stop]
+#    print(pythonCode)
+#    parsed = ast.parse(pythonCode)
+#    print(ast.dump(parsed))
+#    compiled = compile(parsed,filename="<ast>", mode="exec")
+#    exec(compiled,globals(),locals())
+    skip = (stop+3) - start
+    t.lexer.lexpos += skip # senza newLine
+    t.value = pythonCode
+    return t
 
 #def t_ignore_python_escape(t):
 #    r'\$[^\$]+\$'
@@ -156,24 +166,32 @@ precedence = (
 
 def p_program_singleC(p):
     # p stands for production rule (array of syntactic elements, like program, channel, SEMICOL, ...)
-    'program : stm '
+    'program : stm_or_python '
     # each def defines a function p_[NAME OF NON-TERMINAL SYMBOL]_[SOMETHING THAT IDENTIFIES THE CURRENT RULE]
     # As before, the first line (a Python comment) tells the matching rule, here expressed in BNF.
     # For instance, this rule says: a program is a single statement.
-    p[0] = [p[1]]
+    p[0] = p[1]
     # p[0] =the property value of the syntactic element on the LHS of the rule (program, in this case)
     # p[1], p[2], ... = the property values of the syntactic elements on the RHS of the rule, in sequence
     # this says: the value of program is the array whose only element is the value of channel.
 
 # This rule is an OR wrt the previous rule
 def p_program_seqC(p):
-    'program : stm SEMICOL program'
+    'program : stm_or_python SEMICOL program'
     # We use the convention of writing terminal symbols of the grammar in capital letters,
     # corresponding to the tokens of the lexical analysis.
 
-    p[0] = p[3]
-    p[0].insert(0,p[1])
+    p[0] = p[1] + p[3]
+    # p[0].insert(0,p[1])
     # Here I expand the array with more 'program' elements (in front). The meaning of the program will be a sequence of statements.
+
+def p_stm_or_python_1(p):
+    '''stm_or_python : stm'''
+    p[0] = [p[1]]
+
+def p_stm_or_python_2(p):
+    '''stm_or_python : PYTHON_ESCAPE'''
+    p[0] = eplAst.pythonEscape(p)
 
 def p_stm_print(p):
     '''stm : PRINT LPAREN exp RPAREN '''
