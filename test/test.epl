@@ -1,4 +1,4 @@
-x = [1.0|"D" + 0.0|"~D"];
+x = [1.0|"D"> + 0.0|"~D">];
 # escape python
 $$$
 print(x) # variavle defined in epl
